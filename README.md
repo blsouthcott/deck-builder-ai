@@ -15,3 +15,11 @@ This may be different depending on what virtual environment tool you're using, b
 If you're using pyenv to manage your virtual environments you can run `FLASK_ENV=.flaskenv pyenv exec python -m flask run`
 
 If you don't include `FLASK_ENV=.flaskenv` the environment variables will not be loaded.
+
+
+## UI development
+From the top level directory run
+```
+cd ui
+npm start
+```
