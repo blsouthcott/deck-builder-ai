@@ -19,5 +19,8 @@ If you're using pyenv to manage your virtual environments you can run `pyenv exe
 From the top level directory run
 ```
 cd ui
+npm install
+npm install sass -g
+npm run build-css
 npm start
 ```

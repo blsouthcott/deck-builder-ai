@@ -1,11 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
-import SlideDeckForm from './components/form';
+import "./css/App.css";
+import "./css/custom.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SlideDeckForm from "./components/presentationForm";
+import IdeasForm from "./components/ideasForm";
+import Navbar from "./components/navbar";
+
 
 function App() {
   return (
     <div className="App">
-      <SlideDeckForm />
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<SlideDeckForm />} />
+          <Route path="/generate-presentation-ideas" element={<IdeasForm />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
