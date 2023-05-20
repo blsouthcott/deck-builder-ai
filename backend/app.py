@@ -19,6 +19,7 @@ class PresentationIdeas(Resource):
     def post(self):
         body = request.get_json()
         # TODO: add logic for generating ideas using openai
+        return {"ideas": []}, 200
 
 
 class SlideDeck(Resource):
@@ -26,6 +27,7 @@ class SlideDeck(Resource):
     def post(self):
         body = request.get_json()
         # TODO: add logic for generating text for slides using openai and generating powerpoint file with that text
+        return {"byteString": ""}, 200
 
 
 def create_app():
@@ -42,5 +44,5 @@ api.add_resource(SlideDeck, "/api/slideDeck")
 
 
 if __name__ == "__main__":
-    app.run(PORT=int(os.environ["PORT"]))
+    app.run()
     
