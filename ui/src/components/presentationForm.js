@@ -54,8 +54,7 @@ const SlideDeckForm = () => {
             <div className="columns is-centered">
               <div className="column is-half">
               <h1 className="title has-text-white">Presentation Generator</h1>
-              <div className="box">
-                
+                <div className="box">
                   <label htmlFor="topic" className="label">Presentation Topic</label>
                   <input
                     className="input"
@@ -108,11 +107,8 @@ const SlideDeckForm = () => {
                     onChange={e => setSelectedTheme(e.target.value)}
                   />
                   <label htmlFor="theme3"> Theme 3</label>
-                  
                   <br />
-
                   <button className="button my-3" onClick={genSlideDeckFile}>Generate Presentation</button>
-
                   {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides!</a></>}
               </div>
             </div>
