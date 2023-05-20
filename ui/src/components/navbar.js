@@ -7,7 +7,7 @@ import { faFilePowerpoint } from '@fortawesome/free-regular-svg-icons';
 const Navbar = () => {
 
   return (
-    <nav className="navbar">
+    <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
         <Link className="navbar-item" to="/">
           <FontAwesomeIcon icon={faFilePowerpoint} />
