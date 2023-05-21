@@ -8,6 +8,8 @@ from flask_restful import Api, Resource
 import openai
 
 from pptx import Presentation
+from pptx.util import Pt
+from pptx.dml.color import RGBColor
 from io import BytesIO
 from base64 import b64encode
 
@@ -20,6 +22,10 @@ TEMPERATURE = 0.5
 TOPIC_COUNT = 5
 SLIDE_COUNT = 10
 CHARACTER_LIMIT = 300
+custom_font = "Calibri"
+custom_font_color = (0, 0, 0)
+custom_font_size = 32
+custom_background_color = (255, 255, 255)
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -37,6 +43,13 @@ def get_chat_completion(prompt, model=MODEL, temperature=TEMPERATURE):
     )
 
     return resp["choices"][0]["message"]["content"]
+
+
+def font_edit(font, is_body_text):
+    if is_body_text:
+        font.size = Pt(custom_font_size)
+    font.name = custom_font
+    font.color.rgb = RGBColor(custom_font_color[0], custom_font_color[1], custom_font_color[2])
 
 
 class PresentationIdeas(Resource):
@@ -98,8 +111,7 @@ class SlideDeck(Resource):
         title_shape = slide.shapes.title
         title_shape.text = resp_content[20:resp_content.find("\n")].strip('"').strip(
             "'")  # strips quotation marks because the ai sometimes likes to add them to the titles
-        title_shape.text_frame.paragraphs[0].font.name = custom_font
-        title_shape.text_frame.paragraphs[0].font.color.rgb = RGBColor(custom_font_color[0], custom_font_color[1], custom_font_color[2])
+        font_edit(title_shape.text_frame.paragraphs[0].font, False)
         fill = slide.background.fill
         fill.solid()
         fill.fore_color.rgb = RGBColor(custom_background_color[0], custom_background_color[1], custom_background_color[2])
@@ -114,8 +126,7 @@ class SlideDeck(Resource):
             fill.fore_color.rgb = RGBColor(custom_background_color[0], custom_background_color[1], custom_background_color[2])
             title_shape = slide.shapes.title
             title_shape.text = slide_info["title"]  # adds the slide's title
-            title_shape.text_frame.paragraphs[0].font.name = custom_font  # changes the font for the slide's title
-            title_shape.text_frame.paragraphs[0].font.color.rgb = RGBColor(custom_font_color[0], custom_font_color[1], custom_font_color[2])  # changes the text color for the slide's title
+            font_edit(title_shape.text_frame.paragraphs[0].font, False)
 
             try:
                 # adds the bullet points
@@ -128,8 +139,7 @@ class SlideDeck(Resource):
                         paragraph.text = slide_info["content"][i]
                         paragraph.level = 0
                         paragraph.space_before = Pt(15)
-                    bullet_text_frame.paragraphs[i].font.name = custom_font
-                    bullet_text_frame.paragraphs[i].font.color.rgb = RGBColor(custom_font_color[0], custom_font_color[1], custom_font_color[2])
+                    font_edit(bullet_text_frame.paragraphs[i].font, True)
             except IndexError:
                 pass  # TODO: update to handle cases where the API gets the formatting wrong
 
