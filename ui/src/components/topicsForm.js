@@ -35,6 +35,7 @@ const TopicsForm = () => {
       },
       body: JSON.stringify({
         topicCount: numTopicsToLoad,
+        previousTopics: topics.map(topic => topic.name),
       })
     });
     if (resp.status === 200) {

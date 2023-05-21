@@ -59,19 +59,20 @@ class PresentationIdeas(Resource):
         body = request.get_json()
 
         previous_topics = body.get("previousTopics")
-
         if not (topic_count := body.get("topicCount")):
             topic_count = TOPIC_COUNT
 
-        prompt = f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise. Do not include any of the following topics:{previous_topics}" if previous_topics else f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise."
+        prompt = f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise."
+        if previous_topics:
+            prompt += f" Do not include any of the following topics: {','.join(previous_topics)}"
+
         resp_content = get_chat_completion(prompt)
         topics = resp_content.split("\n")
         for i in range(len(topics)):
             topics[i] = re.sub("\d+\.?\s*", "", topics[i]).strip('"').strip("-")
-        previous_topics += "\n- " + "\n- ".join(topics)
 
         logging.debug(f"Here are the topics: {topics}")
-        return {"topics": topics, "previousTopics": previous_topics}, 200
+        return {"topics": topics}, 200
 
 
 class SlideDeck(Resource):
