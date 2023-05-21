@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BACKEND_URL } from "../config";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -43,6 +43,7 @@ const TopicsForm = () => {
       console.log("data received: ", data);
       const newTopics = setTopicKeys(data.topics);
       setTopics([...topics, ...newTopics]);
+      localStorage.setItem("topics", JSON.stringify([...topics, ...newTopics]));
       console.log("topics: ", topics);
       setIsLoading(false);
     } else {
@@ -50,6 +51,18 @@ const TopicsForm = () => {
       window.alert("Unable to load topics");
     }
   }
+
+  const clearTopics = () => {
+    setTopics([]);
+    localStorage.clear();
+  }
+
+  useEffect(() => {
+    const savedTopics = localStorage.getItem("topics");
+    if (savedTopics) {
+      setTopics(JSON.parse(savedTopics));
+    };
+  }, [])
 
   return (
     <section className="hero is-primary is-fullheight">
@@ -67,9 +80,9 @@ const TopicsForm = () => {
                     </ul>}
                   <label htmlFor="num-topics" className="label">Number of topics</label>
                   <input id="num-topics" className="input" type="number" value={numTopicsToLoad} onChange={e => validateNumTopicsToLoad(e)}/>
-                  <button className="button my-4" onClick={loadTopics}>Generate Topics</button>
+                  <button className="button my-4" onClick={loadTopics}>{topics.length > 0 ? "Generate More Topics" : "Generate Topics"}</button>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <button className="button my-4" onClick={() => setTopics([])}>Clear Topics</button>
+                  <button className="button my-4" onClick={clearTopics}>Clear Topics</button>
                 </div>
               </div>
             </div>}
