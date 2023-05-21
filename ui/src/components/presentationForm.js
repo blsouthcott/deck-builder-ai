@@ -86,34 +86,46 @@ const SlideDeckForm = () => {
                   
                   <input
                     className="radio"
-                    id="theme1"
+                    id="blackAndWhiteTheme"
                     type="radio"
-                    value="theme1"
-                    checked={selectedTheme === "theme1"}
+                    value="blackAndWhiteTheme"
+                    checked={selectedTheme === "blackAndWhiteTheme"}
                     onChange={e => setSelectedTheme(e.target.value)}/>
-                  <label htmlFor="theme1"> Theme 1</label>
+                  <label htmlFor="blackAndWhiteTheme"> Black And White</label>
                   
                   <br />
                   <input
                     className="radio"
-                    id="theme2"
+                    id="greyScaleTheme1"
                     type="radio"
-                    value="theme2"
-                    checked={selectedTheme === "theme2"}
+                    value="greyScaleTheme1"
+                    checked={selectedTheme === "greyScaleTheme1"}
                     onChange={e => setSelectedTheme(e.target.value)}
                   />
-                  <label htmlFor="theme2"> Theme 2</label>
+                  <label htmlFor="greyScaleTheme1"> Greyscale 1</label>
                   
                   <br />
                   <input
                     className="radio"
-                    id="theme3"
+                    id="greyScaleTheme2"
                     type="radio"
-                    value="theme3"
-                    checked={selectedTheme === "theme3"}
+                    value="greyScaleTheme2"
+                    checked={selectedTheme === "greyScaleTheme2"}
                     onChange={e => setSelectedTheme(e.target.value)}
                   />
-                  <label htmlFor="theme3"> Theme 3</label>
+                  <label htmlFor="greyScaleTheme2"> Greyscale 2</label>
+
+                  <br />
+                  <input
+                    className="radio"
+                    id="forestTheme"
+                    type="radio"
+                    value="forestTheme"
+                    checked={selectedTheme === "forestTheme"}
+                    onChange={e => setSelectedTheme(e.target.value)}
+                  />
+                  <label htmlFor="forestTheme"> Forest</label>
+
                   <br />
                   <button className="button my-3" onClick={genSlideDeckFile}>Generate Presentation</button>
                   {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides for your '{topic}' presentation!</a></>}
