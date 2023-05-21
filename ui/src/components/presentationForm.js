@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { BACKEND_URL } from '../config';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 
 const SlideDeckForm = () => {
+
   const [topic, setTopic] = useState('');
   const [numSlides, setNumSlides] = useState(5);
   const [selectedTheme, setSelectedTheme] = useState('');
   const [presentationGenerated, setPresentationGenerated] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateNumSlides = (e) => {
     e.target.value >= 1 && setNumSlides(e.target.value);
   }
 
-  const genSlideDeckTopicIdeas = () => {
-    // TODO: handle making request to backend to generate presentation ideas
-  };
-
   const genSlideDeckFile = async () => {
-    // TODO: handle making request to backend to generate powerpoint file
+    setIsLoading(true);
     const resp = await fetch(`${BACKEND_URL}/api/slideDeck`, {
       method: "POST",
       headers: {
@@ -26,7 +25,7 @@ const SlideDeckForm = () => {
       },
       body: JSON.stringify({
         topic: topic,
-        numSlides: numSlides,
+        slide_count: numSlides,
         theme: selectedTheme,
       })
     });
@@ -35,9 +34,12 @@ const SlideDeckForm = () => {
       const { byteString } = data
       const blob = new Blob([byteString], {type: "application/octet-stream"});
       setDownloadUrl(URL.createObjectURL(blob));
-
+    } else {
+      setIsLoading(false);
+      window.alert("Unable to generate presentation")
     }
     setPresentationGenerated(true);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -51,6 +53,8 @@ const SlideDeckForm = () => {
     <section className="hero is-primary is-fullheight">
       <div className="hero-body">
           <div className="container">
+
+            {isLoading ? <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/> :
             <div className="columns is-centered">
               <div className="column is-half">
               <h1 className="title has-text-white">Presentation Generator</h1>
@@ -63,9 +67,6 @@ const SlideDeckForm = () => {
                     type="text" 
                     value={topic} 
                     onChange={e => setTopic(e.target.value)}/>
-                  
-                  {/* <button className="button mt-3" onClick={genSlideDeckTopicIdeas}>Generate Presentation Ideas</button> */}
-                  {/* TODO: Give user the option to generate a list of random presentation topic ideas */}
 
                   <label htmlFor="num-slides" className="label mt-4">Number of Slides</label>
                   <input
@@ -112,7 +113,9 @@ const SlideDeckForm = () => {
                   {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides!</a></>}
               </div>
             </div>
-          </div>
+          </div>}
+
+
         </div>
       </div>
     </section>

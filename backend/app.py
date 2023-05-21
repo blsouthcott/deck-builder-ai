@@ -13,14 +13,20 @@ from base64 import b64encode
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-model = "gpt-3.5-turbo"
-temperature = 0.5
-top_p = 1.0
+MODEL = "gpt-3.5-turbo"
+TEMPERATURE = 0.5
+
+# defaults if not in request body
+TOPIC_COUNT = 5
+SLIDE_COUNT = 10
+CHARACTER_LIMIT = 300
+
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-def get_chat_completion(prompt, model=model, temperature=temperature):
+def get_chat_completion(prompt, model=MODEL, temperature=TEMPERATURE):
+
     resp = openai.ChatCompletion.create(
         model=model,
         messages=[{
@@ -29,6 +35,7 @@ def get_chat_completion(prompt, model=model, temperature=temperature):
         }],
         temperature=temperature
     )
+
     return resp["choices"][0]["message"]["content"]
 
 
@@ -36,26 +43,33 @@ class PresentationIdeas(Resource):
 
     def post(self):
         body = request.get_json()
-        # TODO: add logic for generating ideas using openai
+
         if not (topic_count := body.get("topicCount")):
-            topic_count = 5
+            topic_count = TOPIC_COUNT
+
         prompt = f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise."
         resp_content = get_chat_completion(prompt)
         topics = resp_content.split("\n")
         for i in range(len(topics)):
             topics[i] = re.sub("\d+\.?\s*", "", topics[i]).strip('"').strip("-")
-            # topics[i] = topics[i]  # removes the first three characters from each topic, because those always come out as number + period + space (e.g. "1. ")
+            
         logging.debug(f"Here are the topics: {topics}")
         return {"topics": topics}, 200
 
 
 class SlideDeck(Resource):
 
-    def post(self, topic, slide_count, character_limit):
+    def post(self):
         body = request.get_json()
-        # TODO: add logic for generating text for slides using openai and generating powerpoint file with that text
+
         # collecting data from chatgpt
-        prompt = f'You are an expert on the topic of "{topic}". You are currently writing the content for a PowerPoint presentation on that topic. Start by writing down a clever title for your presentation. Follow that with {slide_count} slides_info that go from Introduction to Conclusion in a logical order. Each slide must have a Title and Content. Try to use full but very concise sentences for the content. Organize the content into lists. You must not let any slide go over {character_limit} characters in length. Do not add anything before or after the presentation.'
+        if not (topic := body.get("topic")):
+            return "Presentation topic is required. Please include a 'topic' field in the request body", 400
+        
+        slide_count = body.get("slide_count")
+        character_limit = body.get("character_limit")
+        
+        prompt = f'You are an expert on the topic of "{topic}". You are currently writing the content for a PowerPoint presentation on that topic. Start by writing down a clever title for your presentation. Follow that with {slide_count if slide_count else SLIDE_COUNT} slides_info that go from Introduction to Conclusion in a logical order. Each slide must have a Title and Content. Try to use full but very concise sentences for the content. Organize the content into lists. You must not let any slide go over {character_limit if character_limit else CHARACTER_LIMIT} characters in length. Do not add anything before or after the presentation.'
         resp_content = get_chat_completion(prompt)
         response_content_lines = resp_content.split("\n")
 

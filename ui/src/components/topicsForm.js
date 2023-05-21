@@ -54,6 +54,8 @@ const TopicsForm = () => {
     <section className="hero is-primary is-fullheight">
       <div className="hero-body">
           <div className="container">
+
+            {isLoading ? <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/> :
             <div className="columns is-centered">
               <div className="column is-half">
                 <h1 className="title has-text-white mt-4">Presentation Ideas</h1>
@@ -69,7 +71,9 @@ const TopicsForm = () => {
                   <button className="button my-4" onClick={() => setTopics([])}>Clear Topics</button>
                 </div>
               </div>
-            </div>
+            </div>}
+
+
           </div>
       </div>
     </section>
