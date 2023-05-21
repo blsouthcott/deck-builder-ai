@@ -44,17 +44,20 @@ class PresentationIdeas(Resource):
     def post(self):
         body = request.get_json()
 
+        previous_topics = body.get("previousTopics")
+
         if not (topic_count := body.get("topicCount")):
             topic_count = TOPIC_COUNT
 
-        prompt = f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise."
+        prompt = f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise. Do not include any of the following topics:{previous_topics}" if previous_topics else f"Generate a list of {topic_count} different topic ideas for a PowerPoint presentation. Put each topic on a new line and keep it concise."
         resp_content = get_chat_completion(prompt)
         topics = resp_content.split("\n")
         for i in range(len(topics)):
             topics[i] = re.sub("\d+\.?\s*", "", topics[i]).strip('"').strip("-")
-            
+        previous_topics += "\n- " + "\n- ".join(topics)
+
         logging.debug(f"Here are the topics: {topics}")
-        return {"topics": topics}, 200
+        return {"topics": topics, "previousTopics": previous_topics}, 200
 
 
 class SlideDeck(Resource):
@@ -69,7 +72,8 @@ class SlideDeck(Resource):
         slide_count = body.get("slide_count")
         character_limit = body.get("character_limit")
         
-        prompt = f'You are an expert on the topic of "{topic}". You are currently writing the content for a PowerPoint presentation on that topic. Start by writing down a clever title for your presentation. Follow that with {slide_count if slide_count else SLIDE_COUNT} slides_info that go from Introduction to Conclusion in a logical order. Each slide must have a Title and Content. Try to use full but very concise sentences for the content. Organize the content into lists. You must not let any slide go over {character_limit if character_limit else CHARACTER_LIMIT} characters in length. Do not add anything before or after the presentation.'
+        # prompt = f'You are an expert on the topic of "{topic}". You are currently writing the content for a PowerPoint presentation on that topic. Start by writing down a clever title for your presentation. Follow that with {slide_count if slide_count else SLIDE_COUNT} slides_info that go from Introduction to Conclusion in a logical order. Each slide must have a Title and Content. Try to use full but very concise sentences for the content. Organize the content into lists. You must not let any slide go over {character_limit if character_limit else CHARACTER_LIMIT} characters in length. Do not add anything before or after the presentation.'
+        prompt = f'''You are an expert on the topic of "{topic}". Generate the content for a PowerPoint presentation on that topic. The following text, enclosed in ", is the format for a complete presentation that is 3 slides long. Parts that you should fill out start with [ and end with ].\n"\nPresentation Title: [catchy title for your presentation]\nSlide 1\nTitle: [catchy title for Slide 1 (cannot be the word 'Introduction')]\nContent:\n[bulleted list of points for Slide 1]\nSlide 2\nTitle: [catchy title for Slide 2]\nContent:\n[bulleted list of points for Slide 2]\nSlide 3\nTitle: [clever title for Slide 3 (cannot be the word 'Conclusion')]\nContent:\n[bulleted list of points for Slide 3]\n"\nUse this format to create exactly {slide_count if slide_count else SLIDE_COUNT} slides, which should include a conclusive final slide. Use full but very concise sentences for the slide content. The slide content must be able to fit inside a single PowerPoint slide using a 32 point font size. Do not add anything before or after the presentation.'''
         resp_content = get_chat_completion(prompt)
         logging.debug("This is the response: ", resp_content)
         response_content_lines = resp_content.split("\n")
