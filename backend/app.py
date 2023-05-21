@@ -9,12 +9,7 @@ from flask_cors import CORS
 from flask_restful import Api, Resource
 import openai
 
-from pptx import Presentation
-from pptx.util import Pt
-from pptx.dml.color import RGBColor
-from pptx.enum.text import MSO_AUTO_SIZE
-
-from pptx_utils import text_to_slide_objs
+from pptx_utils import text_to_slide_objs, gen_presentation
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -25,10 +20,6 @@ TEMPERATURE = 0.5
 TOPIC_COUNT = 5
 SLIDE_COUNT = 10
 CHARACTER_LIMIT = 300
-CUSTOM_FONT = "Calibri"
-CUSTOM_FONT_COLOR = (0, 0, 0)
-CUSTOM_FONT_SIZE = 32
-CUSTOM_BACKGROUND_COLOR = (255, 255, 255)
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -46,13 +37,6 @@ def get_chat_completion(prompt, model=MODEL, temperature=TEMPERATURE):
     )
 
     return resp["choices"][0]["message"]["content"]
-
-
-def font_edit(font, is_body_text):
-    if is_body_text:
-        font.size = Pt(CUSTOM_FONT_SIZE)
-    font.name = CUSTOM_FONT
-    font.color.rgb = RGBColor(CUSTOM_FONT_COLOR[0], CUSTOM_FONT_COLOR[1], CUSTOM_FONT_COLOR[2])
 
 
 class PresentationIdeas(Resource):
@@ -94,49 +78,8 @@ class SlideDeck(Resource):
         logging.debug("This is the response: ", resp_content)
         
         slides = text_to_slide_objs(resp_content)
-
-        # setting up the presentation
-        presentation = Presentation()
-        title_slide_layout = presentation.slide_layouts[0]
-        bullet_slide_layout = presentation.slide_layouts[1]
-
-        # setting up the title slide
-        slide = presentation.slides.add_slide(title_slide_layout)
-        title_shape = slide.shapes.title
-        title_shape.text = slides[0].title
-        font_edit(title_shape.text_frame.paragraphs[0].font, False)
-        fill = slide.background.fill
-        fill.solid()
-        fill.fore_color.rgb = RGBColor(CUSTOM_BACKGROUND_COLOR[0], CUSTOM_BACKGROUND_COLOR[1], CUSTOM_BACKGROUND_COLOR[2])
-
-        # setting up the other slides
-        for slide_info in slides[1:]:
-            slide = presentation.slides.add_slide(bullet_slide_layout)
-            # slide.placeholders[1].left = Pt(36.0)  # resets the slide body's left position to the default
-            # slide.placeholders[1].top = Pt(150.0)  # sets the slide body's top position 24 points below the default, which is 126 points
-            fill = slide.background.fill
-            fill.solid()
-            fill.fore_color.rgb = RGBColor(CUSTOM_BACKGROUND_COLOR[0], CUSTOM_BACKGROUND_COLOR[1], CUSTOM_BACKGROUND_COLOR[2])
-            title_shape = slide.shapes.title
-            title_shape.text = slide_info.title  # adds the slide's title
-            font_edit(title_shape.text_frame.paragraphs[0].font, False)
-
-            # adds the bullet points
-            bullet_text_frame = slide.shapes.placeholders[1].text_frame
-            bullet_text_frame.text = slide_info.content[0]
-            font_edit(bullet_text_frame.paragraphs[0].font, True)
-            for i in range(1, len(slide_info.content)):
-                paragraph = bullet_text_frame.add_paragraph()
-                paragraph.text = slide_info.content[i]
-                paragraph.level = 0
-                paragraph.space_before = Pt(15)
-                font_edit(bullet_text_frame.paragraphs[i].font, True)
-            bullet_text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
-
-        # finally saves the finished pptx file
-        pres_bytes = BytesIO()
-        presentation.save(pres_bytes)
-        pres_bytestring = b64encode(pres_bytes.getvalue()).decode()
+        theme = body.get("theme")
+        pres_bytestring = gen_presentation(slides, theme)
 
         return {"byteString": pres_bytestring}, 200
 
