@@ -10,6 +10,7 @@ import openai
 from pptx import Presentation
 from pptx.util import Pt
 from pptx.dml.color import RGBColor
+from pptx.enum.text import MSO_AUTO_SIZE
 from io import BytesIO
 from base64 import b64encode
 
@@ -96,7 +97,7 @@ class SlideDeck(Resource):
         current_slide = 0
         for line in response_content_lines[3:]:
             if line[:7] == "Title: ":
-                slides_info.append({"title": line[7:], "content": []})
+                slides_info.append({"title": line[7:].strip('"').strip("'"), "content": []})
                 current_slide += 1
             elif line[:1] == "-":
                 slides_info[current_slide - 1]["content"].append(line[2:])
@@ -130,16 +131,16 @@ class SlideDeck(Resource):
 
             try:
                 # adds the bullet points
-                for i in range(len(slide_info["content"])):
-                    if i == 0:
-                        bullet_text_frame = slide.shapes.placeholders[1].text_frame
-                        bullet_text_frame.text = slide_info["content"][0]
-                    else:
-                        paragraph = bullet_text_frame.add_paragraph()
-                        paragraph.text = slide_info["content"][i]
-                        paragraph.level = 0
-                        paragraph.space_before = Pt(15)
+                bullet_text_frame = slide.shapes.placeholders[1].text_frame
+                bullet_text_frame.text = slide_info["content"][0]
+                font_edit(bullet_text_frame.paragraphs[0].font, True)
+                for i in range(1, len(slide_info["content"])):
+                    paragraph = bullet_text_frame.add_paragraph()
+                    paragraph.text = slide_info["content"][i]
+                    paragraph.level = 0
+                    paragraph.space_before = Pt(15)
                     font_edit(bullet_text_frame.paragraphs[i].font, True)
+                bullet_text_frame.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
             except IndexError:
                 pass  # TODO: update to handle cases where the API gets the formatting wrong
 
