@@ -31,8 +31,13 @@ const SlideDeckForm = () => {
     });
     if (resp.status === 200) {
       const data = await resp.json();
-      const { byteString } = data
-      const blob = new Blob([byteString], {type: "application/octet-stream"});
+      let { byteString } = data;
+      byteString = atob(byteString)
+      const byteArr = new Uint8Array(byteString.length);
+      for (let i=0; i<byteString.length; i++) {
+        byteArr[i] = byteString.charCodeAt(i);
+      };
+      const blob = new Blob([byteArr], {type: "application/octet-stream"});
       setDownloadUrl(URL.createObjectURL(blob));
     } else {
       setIsLoading(false);
