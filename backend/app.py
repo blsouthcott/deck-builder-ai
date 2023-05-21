@@ -8,6 +8,9 @@ from flask_restful import Api, Resource
 import openai
 
 from pptx import Presentation
+from io import BytesIO
+from base64 import b64encode
+
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 model = "gpt-3.5-turbo"
@@ -99,9 +102,12 @@ class SlideDeck(Resource):
                 p.level = 0
 
         # finally saves the finished pptx file
-        presentation.save('test.pptx')
+        pres_bytes = BytesIO()
+        presentation.save(pres_bytes)
+        pres_bytestring = b64encode(pres_bytes.getvalue()).decode()
+        # presentation.save('test.pptx')
 
-        return {"byteString": ""}, 200
+        return {"byteString": pres_bytestring}, 200
 
 
 def create_app():
