@@ -39,7 +39,7 @@ const SlideDeckForm = () => {
       };
       const blob = new Blob([byteArr], {type: "application/octet-stream"});
       setDownloadUrl(URL.createObjectURL(blob));
-      window.alert(`Your ${topic} presentation was generated successfully! Please use the download link to access the file.`);
+      window.alert(`Your '${topic}' presentation was generated successfully! Please use the download link to access the file.`);
     } else {
       setIsLoading(false);
       window.alert("Unable to generate presentation")
@@ -116,7 +116,7 @@ const SlideDeckForm = () => {
                   <label htmlFor="theme3"> Theme 3</label>
                   <br />
                   <button className="button my-3" onClick={genSlideDeckFile}>Generate Presentation</button>
-                  {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides for your {topic} presentation!</a></>}
+                  {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides for your '{topic}' presentation!</a></>}
               </div>
             </div>
           </div>}
