@@ -20,18 +20,11 @@ class BlackAndWhiteTheme:
     background_color = RGBColor(255, 255, 255)  # White
 
 
-class GreyScaleTheme1:
+class GreyScaleTheme:
     font = "Times New Roman"
     font_color = RGBColor(211, 211, 211) 
     font_size = Pt(32)
     background_color = RGBColor(64, 64, 64)
-
-
-class GreyScaleTheme2:
-    font = "Arial"
-    font_color = RGBColor(51, 51, 51)  # Dark gray
-    font_size = Pt(28)
-    background_color = RGBColor(240, 240, 240) # Light gray
 
 
 class ForestTheme:
@@ -43,8 +36,7 @@ class ForestTheme:
 
 THEME_MAPPING = {
     "blackAndWhiteTheme": BlackAndWhiteTheme,
-    "greyScaleTheme1": GreyScaleTheme1,
-    "greyScaleTheme2": GreyScaleTheme2,
+    "greyScaleTheme": GreyScaleTheme,
     "forestTheme": ForestTheme
 }
 
@@ -66,7 +58,7 @@ def get_slide_content_from_lines(lines, idx):
     slide_content = []
 
     while idx < len(lines):
-        if lines[idx].lower().startswith("slide"):
+        if lines[idx].lower().startswith("slide") or lines[idx].lower().startswith("final slide"):
             break
 
         if lines[idx].lower().startswith("content"):
@@ -93,7 +85,7 @@ def text_to_slide_objs(text):
 
     line_idx = 1
     while line_idx < len(lines):
-        if lines[line_idx].lower().startswith("slide"):
+        if lines[line_idx].lower().startswith("slide") or lines[line_idx].lower().startswith("final slide"):
             slides.append(Slide())
             slide_count += 1
         elif lines[line_idx].lower().startswith("title"):
@@ -138,8 +130,10 @@ def gen_presentation(slides, theme_str):
     # setting up the other slides
     for slide_info in slides[1:]:
         slide = presentation.slides.add_slide(bullet_slide_layout)
-        # slide.placeholders[1].left = Pt(36.0)  # resets the slide body's left position to the default
-        # slide.placeholders[1].top = Pt(150.0)  # sets the slide body's top position 24 points below the default, which is 126 points
+        slide.placeholders[1].left = Pt(36.0)  # resets the slide body's left position to the default
+        slide.placeholders[1].top = Pt(150.0)  # sets the slide body's top position 24 points below the default, which is 126 points
+        slide.placeholders[1].width = Pt(648.0)
+        slide.placeholders[1].height = Pt(356.0)
         fill = slide.background.fill
         fill.solid()
         fill.fore_color.rgb = theme.background_color

@@ -101,24 +101,13 @@ const SlideDeckForm = () => {
                   <br />
                   <input
                     className="radio"
-                    id="greyScaleTheme1"
+                    id="greyScaleTheme"
                     type="radio"
-                    value="greyScaleTheme1"
-                    checked={selectedTheme === "greyScaleTheme1"}
+                    value="greyScaleTheme"
+                    checked={selectedTheme === "greyScaleTheme"}
                     onChange={e => setSelectedTheme(e.target.value)}
                   />
-                  <label htmlFor="greyScaleTheme1"> Greyscale 1</label>
-                  
-                  <br />
-                  <input
-                    className="radio"
-                    id="greyScaleTheme2"
-                    type="radio"
-                    value="greyScaleTheme2"
-                    checked={selectedTheme === "greyScaleTheme2"}
-                    onChange={e => setSelectedTheme(e.target.value)}
-                  />
-                  <label htmlFor="greyScaleTheme2"> Greyscale 2</label>
+                  <label htmlFor="greyScaleTheme"> Greyscale</label>
 
                   <br />
                   <input

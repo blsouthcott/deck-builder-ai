@@ -75,7 +75,7 @@ class SlideDeck(Resource):
         
         prompt = f'''You are an expert on the topic of "{topic}". Generate the content for a PowerPoint presentation on that topic. The following text, enclosed in ", is the format for a complete presentation that is 3 slides long. Parts that you should fill out start with [ and end with ].\n"\nPresentation Title: [catchy title for your presentation]\nSlide 1\nTitle: [catchy title for Slide 1 (cannot be the word 'Introduction')]\nContent:\n[bulleted list of points for Slide 1] (use full but very concise sentences)\nSlide 2\nTitle: [catchy title for Slide 2]\nContent:\n[bulleted list of points for Slide 2] (use full but very concise sentences)\nSlide 3\nTitle: [clever title for Slide 3 (cannot be the word 'Conclusion')]\nContent:\n[bulleted list of points for Slide 3] (use full but very concise sentences)\n"\nUse this format to create exactly {slide_count if slide_count else SLIDE_COUNT} slides, which should include a conclusive final slide. The slide content must not exceed {character_limit if character_limit else CHARACTER_LIMIT}. Do not add anything before or after the presentation.'''
         resp_content = get_chat_completion(prompt)
-        logging.debug("This is the response: ", resp_content)
+        logging.debug(f"This is the response: {resp_content}")
         
         slides = text_to_slide_objs(resp_content)
         theme = body.get("theme")
