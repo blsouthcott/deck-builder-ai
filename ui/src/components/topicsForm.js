@@ -69,7 +69,12 @@ const TopicsForm = () => {
       <div className="hero-body">
           <div className="container">
 
-            {isLoading ? <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/> :
+            {isLoading ?
+            <>
+              <p className="has-text-white my-4 is-size-5">Presentation topic ideas are currently being generated. For 20 topics, this should take no longer than 20 seconds...</p>
+              <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/>
+            </> 
+            :
             <div className="columns is-centered">
               <div className="column is-half">
                 <h1 className="title has-text-white mt-4">Presentation Ideas</h1>

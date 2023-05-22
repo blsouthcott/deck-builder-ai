@@ -60,7 +60,12 @@ const SlideDeckForm = () => {
       <div className="hero-body">
           <div className="container">
 
-            {isLoading ? <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/> :
+            {isLoading ? 
+            <>
+              <p className="has-text-white my-4 is-size-5">Please wait while we generate your presentation. For 10 slides or less, this should take no longer than 1 minute...</p>
+              <ClipLoader size={50} color="white" cssOverride={{display: "block", margin: "0 auto",}}/>
+            </> 
+            :
             <div className="columns is-centered">
               <div className="column is-half">
               <h1 className="title has-text-white">Presentation Generator</h1>
