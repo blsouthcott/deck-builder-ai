@@ -122,7 +122,7 @@ const SlideDeckForm = () => {
 
                   <br />
                   <button className="button my-3" onClick={genSlideDeckFile}>Generate Presentation</button>
-                  {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download="slides.pptx">Click here to download the slides for your '{topic}' presentation!</a></>}
+                  {presentationGenerated && <><br /><a className="has-text-link mt-4" href={downloadUrl} download={`${topic}.pptx`}>Click here to download the slides for your '{topic}' presentation!</a></>}
               </div>
             </div>
           </div>}
