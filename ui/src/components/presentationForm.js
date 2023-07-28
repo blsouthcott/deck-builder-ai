@@ -39,13 +39,13 @@ const SlideDeckForm = () => {
       };
       const blob = new Blob([byteArr], {type: "application/octet-stream"});
       setDownloadUrl(URL.createObjectURL(blob));
+      setIsLoading(false);
       window.alert(`Your '${topic}' presentation was generated successfully! Please use the download link to access the file.`);
     } else {
       setIsLoading(false);
       window.alert("Unable to generate presentation")
     }
     setPresentationGenerated(true);
-    setIsLoading(false);
   };
 
   useEffect(() => {
